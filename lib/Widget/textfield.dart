@@ -145,7 +145,7 @@ class _TextFeildStyleState extends State<TextFeildStyle> {
             keyboardType: widget.keyboardType,
             style: AppTextStyle.labelText.copyWith(color: blackColor),
             onTap: widget.ontap,
-            readOnly: false,
+            readOnly: widget.readOnly ?? false,
             // minLines: widget.maxLines??1,
             validator: widget.validation,
             maxLines: widget.maxLines ?? 1,

@@ -99,7 +99,7 @@ class _ProfileState extends State<Profile> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: Column(
               children: [
                 TitleCard(
@@ -117,229 +117,241 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: profilepic.isNotEmpty
-                            ? NetworkImage(profilepic)
-                            : null,
-                        child: profilepic.isEmpty
-                            ? Icon(Icons.person, size: 50)
-                            : null,
-                      ),
-                      SizedBox(width: 10),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _displayName,
-                              style: AppTextStyle.textSemibold20,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                              child: Text(
-                                _email,
-                                style: AppTextStyle.textgrey
-                                    .copyWith(fontWeight: FontWeight.w500),
-                                overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundImage: profilepic.isNotEmpty
+                                    ? NetworkImage(profilepic)
+                                    : null,
+                                child: profilepic.isEmpty
+                                    ? Icon(Icons.person, size: 50)
+                                    : null,
+                              ),
+                              SizedBox(width: 10),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _displayName,
+                                      style: AppTextStyle.textSemibold20,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                      child: Text(
+                                        _email,
+                                        style: AppTextStyle.textgrey.copyWith(
+                                            fontWeight: FontWeight.w500),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(thickness: 1),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "My orders",
+                                style: AppTextStyle.text,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  nextPage(context, MyOrdersScreen());
+                                },
+                                child: Text(
+                                  "See All",
+                                  style: AppTextStyle.labelText
+                                      .copyWith(color: primaryColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        StreamBuilder<List<Map<String, dynamic>>>(
+                          stream: ProfileApi.fetchCurrentOrders(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              print('Error in stream: ${snapshot.error}');
+                              return Center(
+                                  child: Text('Something went wrong'));
+                            }
+
+                            if (snapshot.data == null ||
+                                snapshot.data!.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Text(
+                                    'No orders in delivery',
+                                    style: AppTextStyle.textSemibold20.copyWith(
+                                        color: primaryColor, fontSize: 16),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // Get the first order in the list
+                            final order = snapshot.data!.first;
+
+                            print("order profile page:: $order");
+
+                            String orderId = order['order_id'].toString();
+                            String status = order['status'];
+                            String dateTime = (order['time'] as Timestamp)
+                                .toDate()
+                                .toString();
+                            String totalPrice = order['total_price'].toString();
+
+                            // Display only the first order
+                            return MyOrder(
+                              isCurrentOrder: true,
+                              orderId: orderId,
+                              status: status,
+                              dateTime: dateTime,
+                              totalPrice: totalPrice,
+                              items: ProfileApi.convertProductDetails(
+                                List<Map<String, dynamic>>.from(
+                                    order['product_details']),
+                              ),
+                            );
+                          },
+                        ),
+                        Divider(thickness: 1),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 60,
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.person_outline_rounded,
+                          text: "Manage profile",
+                          onPressed: () {
+                            nextPage(context, ManageProfile());
+                            print('Manage profile pressed');
+                          },
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.map_rounded,
+                          text: "Address book",
+                          onPressed: () {
+                            nextPage(
+                                context,
+                                Location(
+                                  isAddressbook: true,
+                                ));
+                            print('Address book pressed');
+                          },
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.payment_rounded,
+                          text: "Payment methods",
+                          onPressed: () {
+                            nextPage(context, PaymentMethods());
+                            print('Payment methods pressed');
+                          },
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.settings_outlined,
+                          text: "Account Settings",
+                          onPressed: () {
+                            nextPage(context, SettingsPage());
+                            print('Settimns pressed');
+                          },
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.info_outline_rounded,
+                          text: "About",
+                          onPressed: () {
+                            nextPage(context, AboutPage());
+                            print('About pressed');
+                          },
+                        ),
+                        SettingPageOptions(
+                          icon: Icons.delete_rounded,
+                          text: "Delete account",
+                          onPressed: () {
+                            print('delete account pressed');
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomConfirmationDialog(
+                                  title: 'Confirm Delete',
+                                  message:
+                                      'Are you sure to delete this account?',
+                                  cancelText: 'Cancel',
+                                  confirmText: 'Confirm',
+                                  onCancelPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onConfirmPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          child: Container(
+                            width: double.infinity,
+                            height: 60,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                _auth.signOut();
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginSignup()),
+                                    (Route<dynamic> route) => false);
+                              },
+                              icon: Icon(
+                                Icons.logout_rounded,
+                                color: primaryColor,
+                                size: 22,
+                              ),
+                              label: Text(
+                                'Sign Out',
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                    color: Color(0xFFB42132).withOpacity(0.26)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(80),
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 24,
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(thickness: 1),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "My orders",
-                        style: AppTextStyle.text,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          nextPage(context, MyOrdersScreen());
-                        },
-                        child: Text(
-                          "See All",
-                          style: AppTextStyle.labelText
-                              .copyWith(color: primaryColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: StreamBuilder<List<Map<String, dynamic>>>(
-                    stream: ProfileApi.fetchCurrentOrders(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-
-                      if (snapshot.hasError) {
-                        print('Error in stream: ${snapshot.error}');
-                        return Center(child: Text('Something went wrong'));
-                      }
-
-                      if (snapshot.data == null || snapshot.data!.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: Text(
-                              'No orders in delivery',
-                              style: AppTextStyle.textSemibold20
-                                  .copyWith(color: primaryColor, fontSize: 16),
-                            ),
                           ),
-                        );
-                      }
-
-                      return ListView(
-                        children: snapshot.data!.map((order) {
-                          print("order profile page:: $order");
-
-                          String orderId = order['order_id'].toString();
-                          String status = order['status'];
-                          String dateTime =
-                              (order['time'] as Timestamp).toDate().toString();
-                          String totalPrice = order['total_price'].toString();
-
-                          return MyOrder(
-                            isCurrentOrder: true,
-                            orderId: orderId,
-                            status: status,
-                            dateTime: dateTime,
-                            totalPrice: totalPrice,
-                            items: ProfileApi.convertProductDetails(
-                              List<Map<String, dynamic>>.from(
-                                  order['product_details']),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ),
-                Divider(thickness: 1),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 60,
-                ),
-                SettingPageOptions(
-                  icon: Icons.person_outline_rounded,
-                  text: "Manage profile",
-                  onPressed: () {
-                    nextPage(context, ManageProfile());
-                    print('Manage profile pressed');
-                  },
-                ),
-                SettingPageOptions(
-                  icon: Icons.map_rounded,
-                  text: "Address book",
-                  onPressed: () {
-                    nextPage(
-                        context,
-                        Location(
-                          isAddressbook: true,
-                        ));
-                    print('Address book pressed');
-                  },
-                ),
-                SettingPageOptions(
-                  icon: Icons.payment_rounded,
-                  text: "Payment methods",
-                  onPressed: () {
-                    nextPage(context, PaymentMethods());
-                    print('Payment methods pressed');
-                  },
-                ),
-                SettingPageOptions(
-                  icon: Icons.settings_outlined,
-                  text: "Account Settings",
-                  onPressed: () {
-                    nextPage(context, SettingsPage());
-                    print('Settimns pressed');
-                  },
-                ),
-                SettingPageOptions(
-                  icon: Icons.info_outline_rounded,
-                  text: "About",
-                  onPressed: () {
-                    nextPage(context, AboutPage());
-                    print('About pressed');
-                  },
-                ),
-                SettingPageOptions(
-                  icon: Icons.delete_rounded,
-                  text: "Delete account",
-                  onPressed: () {
-                    print('delete account pressed');
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CustomConfirmationDialog(
-                          title: 'Confirm Delete',
-                          message: 'Are you sure to delete this account?',
-                          cancelText: 'cancel',
-                          confirmText: 'confirm',
-                          onCancelPressed: () {
-                            Navigator.pop(context);
-                          },
-                          onConfirmPressed: () {
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Container(
-                    width: double.infinity,
-                    height: 60,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        _auth.signOut();
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => LoginSignup()),
-                            (Route<dynamic> route) => false);
-                      },
-                      icon: Icon(
-                        Icons.logout_rounded,
-                        color: primaryColor,
-                        size: 22,
-                      ),
-                      label: Text(
-                        'Sign Out',
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 20,
                         ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                            color: Color(0xFFB42132).withOpacity(0.26)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(80),
-                        ),
-                      ),
+                      ],
                     ),
                   ),
                 ),

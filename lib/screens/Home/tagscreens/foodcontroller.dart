@@ -89,7 +89,10 @@ class FoodController extends GetxController {
             'beef-curry cut',
             'beef-legs',
             'beef-ribs',
-            'beef-steakcut'
+            'beef-steakcut',
+            'beef-steak',
+            'beef-filet',
+            'beef-strip',
           ];
           break;
         case 'chicken':
@@ -98,17 +101,34 @@ class FoodController extends GetxController {
             'chicken-curry cut',
             'chicken-drums',
             'chicken-legs',
-            'chicken-whole'
+            'chicken-whole',
+            'chicken-mince',
+            'chicken-boneless-cut',
           ];
           break;
         case 'fish':
-          subCollectionNames = ['fish-type A', 'fish-type B', 'fish-type C'];
+          subCollectionNames = [
+            'fish-type A',
+            'fish-type B',
+            'fish-type C',
+            'samlon',
+            'tuna',
+            'tilapia',
+          ];
           break;
         case 'lamb':
-          subCollectionNames = ['lamb-curry cut', 'lamb-tenders'];
+          subCollectionNames = [
+            'lamb-curry cut',
+            'lamb-tenders',
+            'lamb-chops',
+          ];
           break;
         case 'mutton':
-          subCollectionNames = ['mutton-legs', 'mutton-ribs'];
+          subCollectionNames = [
+            'mutton-legs',
+            'mutton-ribs',
+            'mutton-curry-cut',
+          ];
           break;
         case 'shrimp':
           subCollectionNames = ['shrimp-type A', 'shrimp-type B'];

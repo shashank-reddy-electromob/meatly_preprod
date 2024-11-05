@@ -42,7 +42,7 @@ class AppTextStyle {
     fontSize: 16,
     color: blackColor,
     // letterSpacing: 1,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
   );
   static const TextStyle priceText = TextStyle(
     fontFamily: 'Inter',
@@ -77,7 +77,7 @@ class AppTextStyle {
     fontSize: 12,
     color: greyColor,
     // letterSpacing: 1,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w500,
   );
   static const TextStyle textGreySemi12 = TextStyle(
     fontFamily: 'Inter',

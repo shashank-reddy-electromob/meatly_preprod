@@ -24,27 +24,47 @@ class CustomConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       content: Stack(children: [
         Positioned(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Icon(
-                Icons.close,
-                size: 15,
+          top: 0,
+          right: 0,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Colors.white,
+                border: Border.all(
+                  color: Color.fromRGBO(237, 237, 237, 1),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    offset: Offset(2, 4),
+                    blurRadius: 8,
+                  )
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: Icon(
+                  Icons.close,
+                  size: 20,
+                ),
               ),
             ),
           ),
-          top: 0,
-          right: 0,
         ),
         Padding(
           padding:
-              const EdgeInsets.only(bottom: 20, left: 10, right: 10, top: 20),
+              const EdgeInsets.only(bottom: 0, left: 10, right: 10, top: 20),
           child: Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
@@ -62,7 +82,7 @@ class CustomConfirmationDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 12,
                 ),
                 Text(
                   message,
@@ -74,7 +94,7 @@ class CustomConfirmationDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 28,
                 ),
                 Row(
                   children: [
@@ -82,26 +102,47 @@ class CustomConfirmationDialog extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: onCancelPressed,
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: lightGreyColor),
+                          side: BorderSide(
+                            color: primaryColor.withOpacity(0.26),
+                            width: 2,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(80),
                           ),
                         ),
-                        child: Text(cancelText,
-                            style: TextStyle(
-                                color: primaryColor, fontFamily: 'Inter')),
+                        child: Text(
+                          cancelText,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(
                       width: 20,
                     ),
                     Expanded(
-                      child: CustomButton(
-                        // isPopup: true,
-                        textSize: 14,
-                        // width: MediaQuery.of(context).size.width / 5,
-                        text: confirmText,
+                      child: ElevatedButton(
                         onPressed: onConfirmPressed,
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          surfaceTintColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                        child: Text(
+                          confirmText,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
                   ],

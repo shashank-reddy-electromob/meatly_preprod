@@ -41,4 +41,29 @@ class FormValidators {
     // Additional phone number validation logic can be added here
     return null;
   }
+
+  static String? validateExpiryDate(String? input) {
+    final RegExp regExp = RegExp(r'^(0[1-9]|1[0-2])\/?([0-9]{2})$');
+
+    if (input == null) {
+      return 'Please enter valid expiry date';
+    }
+
+    if (!regExp.hasMatch(input)) {
+      return 'Please enter valid expiry date';
+    }
+
+    final int month = int.parse(input.substring(0, 2));
+    final int year = int.parse(input.substring(3, 5));
+
+    final DateTime now = DateTime.now();
+    final int currentYear = int.parse(now.year.toString().substring(2));
+    final int currentMonth = now.month;
+
+    if (year < currentYear || (year == currentYear && month < currentMonth)) {
+      return 'Please enter valid expiry date';
+    }
+
+    return null;
+  }
 }
