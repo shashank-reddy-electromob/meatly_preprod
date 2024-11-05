@@ -11,9 +11,12 @@ import 'package:meatly/Widget/textfield.dart';
 import 'package:meatly/Widget/titlewidget.dart';
 import 'package:meatly/globalvariables.dart';
 import 'package:meatly/main.dart';
+import 'package:meatly/screens/Settings/paymentmethods.dart';
 import 'package:meatly/screens/order&tracking/trackingpage.dart';
 import 'package:meatly/utilities/colors.dart';
 import 'package:meatly/utilities/textstyles.dart';
+import 'package:square_in_app_payments/in_app_payments.dart';
+import 'package:square_in_app_payments/models.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String cartId;
@@ -351,6 +354,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
   // List<Map<String, dynamic>> cards = [];
 
+  String generateOrderID() {
+    Random random = Random();
+    int orderID = random.nextInt(900000000) + 100000000;
+    return orderID.toString();
+  }
+
   Future<void> _placeOrder() async {
     setState(() {
       isLoading = true;
@@ -392,34 +401,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
           'weight': data['weight'],
         };
       }).toList();
+      // startPayment();
 
-      String orderId = _generateOrderID();
+      await InAppPayments.startCardEntryFlow(
+        onCardNonceRequestSuccess: (CardDetails result) async {
+          InAppPayments.completeCardEntry(onCardEntryComplete: () async {
+            // Handle payment completion
+            print('payment sucess');
 
-      Map<String, dynamic> orderData = {
-        'order_id': orderId,
-        'status': 'In delivery',
-        'time': Timestamp.fromDate(DateTime.now()),
-        'total_price': widget.paymentAmount,
-      };
+            String orderId = generateOrderID();
 
-      CollectionReference orderRef =
-          usersCollection.doc(userId).collection('Orders');
-      DocumentReference orderDocRef = await orderRef.add(orderData);
+            Map<String, dynamic> orderData = {
+              'order_id': orderId,
+              'status': 'In delivery',
+              'time': Timestamp.fromDate(DateTime.now()),
+              'total_price': widget.paymentAmount,
+            };
 
-      for (Map<String, dynamic> product in products) {
-        await orderDocRef.collection('product_details').add(product);
-        showSucessMessage(context, "Order Placed");
-      }
-      await usersCollection
-          .doc(userId)
-          .collection('Cart')
-          .doc(widget.cartId)
-          .delete();
-      setState(() {
-        isLoading = false;
-      });
+            CollectionReference orderRef =
+                usersCollection.doc(userId).collection('Orders');
+            DocumentReference orderDocRef = await orderRef.add(orderData);
 
-      nextPage(context, SuccessPage());
+            for (Map<String, dynamic> product in products) {
+              await orderDocRef.collection('product_details').add(product);
+              showSucessMessage(context, "Order Placed");
+            }
+            await usersCollection
+                .doc(userId)
+                .collection('Cart')
+                .doc(widget.cartId)
+                .delete();
+            setState(() {
+              isLoading = false;
+            });
+
+            nextPage(context, SuccessPage());
+          });
+        },
+        onCardEntryCancel: () {
+          print('card canceled--------->');
+          // throw Exception('Payment failed');
+          showErrorMessage(context, "Payment Failed");
+        },
+      );
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -427,12 +451,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       print("Failed to place order: $e");
       showErrorMessage(context, "Failed to place order: $e");
     }
-  }
-
-  String _generateOrderID() {
-    Random random = Random();
-    int orderID = random.nextInt(900000000) + 100000000;
-    return orderID.toString();
   }
 
   void showBottomDrawer(BuildContext context) {
@@ -625,20 +643,23 @@ class SuccessPage extends StatelessWidget {
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        // mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'lib/assets/images/success.png',
-            height: screenHeight * 0.17,
-          ),
-          SizedBox(height: screenHeight * 0.02),
-          Text('Order placed', style: AppTextStyle.pageHeadingSemiBold),
-          SizedBox(height: screenHeight * 0.01),
-          Text('Your order has been placed, Please enjoy our service !',
-              textAlign: TextAlign.center, style: AppTextStyle.hintText),
-        ],
+      body: SizedBox(
+        width: screenWidth,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'lib/assets/images/success.png',
+              height: screenHeight * 0.17,
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            Text('Order placed', style: AppTextStyle.pageHeadingSemiBold),
+            SizedBox(height: screenHeight * 0.01),
+            Text('Your order has been placed, Please enjoy our service !',
+                textAlign: TextAlign.center, style: AppTextStyle.hintText),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(

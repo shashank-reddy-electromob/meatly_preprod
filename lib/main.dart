@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:meatly/Widget/splashScreen.dart';
 import 'package:meatly/screens/cart&checkout/widget/cartitem.dart';
+import 'package:square_in_app_payments/in_app_payments.dart';
 import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +26,7 @@ Future<void> main() async {
     androidProvider: AndroidProvider.playIntegrity,
     // appleProvider: AppleProvider.appAttest,
   );
+  InAppPayments.setSquareApplicationId('sandbox-sq0idb-t5RHW8bjuDq6k05NRgBPMg');
 
   runApp(MyApp());
 }

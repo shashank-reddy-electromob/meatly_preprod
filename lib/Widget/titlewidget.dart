@@ -28,26 +28,28 @@ class TitleCard extends StatelessWidget {
                 GestureDetector(
                   onTap: onBack,
                   child: Container(
-                    width: 30,
-                    height: 30,
+                    // width: 30,
+                    // height: 30,
+                    padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                        color: Colors.white,
-                        width: 1.5,
+                        color: Color.fromRGBO(237, 237, 237, 1),
+                        width: 1,
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
+                      borderRadius: BorderRadius.circular(50),
+                      boxShadow: [
                         BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 2.0,
-                          offset: Offset(0.0, 0.0),
+                          // color: Colors.black26,
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 8,
+                          offset: Offset(2, 4),
                         ),
                       ],
                     ),
                     child: Icon(
                       Icons.arrow_back_ios_rounded,
-                      size: 18,
+                      size: 20,
                       color: Colors.black,
                     ),
                   ),
@@ -59,10 +61,10 @@ class TitleCard extends StatelessWidget {
                 title,
                 style: TextStyle(
                   color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 1,
                   fontFamily: 'Inter',
-                  fontSize: 16,
+                  fontSize: 20,
                 ),
               ),
             ],

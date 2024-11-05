@@ -10,6 +10,7 @@ import 'package:meatly/globalvariables.dart';
 import 'package:meatly/navigationscreen.dart';
 import 'package:meatly/screens/Home/bannerpage/bannerpage.dart';
 import 'package:meatly/screens/Home/tagscreens/foodcontroller.dart';
+import 'package:meatly/screens/productscreen/productdetailspage.dart';
 import 'package:meatly/utilities/colors.dart';
 
 class TagScreen extends StatefulWidget {
@@ -59,222 +60,285 @@ class _TagScreenState extends State<TagScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TitleCard(
-                  title: widget.tagName,
-                  onBack: () {
-                    nextPage(context, HomeScreen());
-                  },
-                  sizeWidget: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TitleCard(
+                title: widget.tagName,
+                onBack: () {
+                  nextPage(context, HomeScreen());
+                },
+                sizeWidget: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
                         color: Colors.white,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1.5,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 2.0,
+                          offset: Offset(0.0, 0.0),
                         ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 2.0,
-                            offset: Offset(0.0, 0.0),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.search,
-                        size: 18,
-                        color: Colors.black,
-                      ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Colors.black,
                     ),
                   ),
                 ),
-                _foodController.foodTags.isEmpty
-                    ? Center(
-                        child: CircularProgressIndicator(
-                        color: primaryColor,
-                      ))
-                    : Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height / 23,
-                          width: MediaQuery.of(context).size.width,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                InkWell(
+              ),
+              _foodController.foodTags.isEmpty
+                  ? Center(
+                      child: CircularProgressIndicator(
+                      color: primaryColor,
+                    ))
+                  : Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height / 23,
+                        width: MediaQuery.of(context).size.width,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              Visibility(
+                                visible: widget.tagName != "Flash sale",
+                                child: InkWell(
                                   onTap: () {
-                                    nextPage(
-                                        context,
-                                        TagScreen(
-                                          tagName: 'Flash sale',
-                                        ));
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TagScreen(tagName: 'Flash sale'),
+                                      ),
+                                    );
                                   },
                                   child: CustomTag(
                                       imagePath:
                                           'lib/assets/icons/flashsale.svg',
                                       text: 'Flash Sale'),
                                 ),
-                                ..._foodController.foodTags.map((tag) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      nextPage(
-                                          context,
-                                          TagScreen(
-                                            tagName: tag,
-                                          ));
-                                    },
-                                    child: CustomTag(
-                                      imagePath: getImagePathForTag(tag),
-                                      text: tag,
-                                    ),
-                                  );
-                                }).toList(),
-                              ],
-                            ),
+                              ),
+                              ..._foodController.foodTags.map((tag) {
+                                return tag == widget.tagName
+                                    ? SizedBox()
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TagScreen(tagName: tag),
+                                            ),
+                                          );
+                                        },
+                                        child: CustomTag(
+                                          imagePath: getImagePathForTag(tag),
+                                          text: tag,
+                                        ),
+                                      );
+                              }).toList(),
+                            ],
                           ),
                         ),
                       ),
-                Column(
-                  children: [
-                    CarouselSlider(
-                      items: imgList
-                          .map((item) => GestureDetector(
-                                onTap: () {
-                                  nextPage(context, BannerPage());
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 18.0),
-                                  child: Image.asset(
-                                    item,
-                                    fit: BoxFit.cover,
-                                    width: MediaQuery.of(context).size.width,
+                    ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CarouselSlider(
+                        items: imgList
+                            .map((item) => GestureDetector(
+                                  onTap: () {
+                                    nextPage(context, BannerPage());
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18.0),
+                                    child: Image.asset(
+                                      item,
+                                      fit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
                                   ),
-                                ),
-                              ))
-                          .toList(),
-                      options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height / 4,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                        aspectRatio: 16 / 9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        viewportFraction: 1,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _current = index;
-                          });
-                        },
+                                ))
+                            .toList(),
+                        options: CarouselOptions(
+                          height: MediaQuery.of(context).size.height / 4,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                          aspectRatio: 16 / 9,
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enableInfiniteScroll: true,
+                          autoPlayAnimationDuration:
+                              Duration(milliseconds: 800),
+                          viewportFraction: 1,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _current = index;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: imgList.asMap().entries.map((entry) {
-                        return GestureDetector(
-                          onTap: () => _current = entry.key,
-                          child: Container(
-                            width: 8.0,
-                            height: 8.0,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 4.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: (Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : primaryColor)
-                                  .withOpacity(
-                                      _current == entry.key ? 0.9 : 0.4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: imgList.asMap().entries.map((entry) {
+                          return GestureDetector(
+                            onTap: () => _current = entry.key,
+                            child: Container(
+                              width: 8.0,
+                              height: 8.0,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 4.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : primaryColor)
+                                    .withOpacity(
+                                        _current == entry.key ? 0.9 : 0.4),
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-                widget.tagName == 'Flash sale'
-                    ? StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _tagscreenStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text("Error: ${snapshot.error}"));
-                          } else if (!snapshot.hasData ||
-                              snapshot.data!.isEmpty) {
-                            return Center(child: Text("No data available"));
-                          } else {
-                            final data = snapshot.data!;
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return FlashSaleCard(
-                                    isFlashSale: true,
-                                    id: '${item['id']}',
-                                    discountText: '${item['discount']}% off',
-                                    itemName: '${item['product_name']}',
-                                    weight: '${item['weight']}',
-                                    price: item['discounted_price'],
-                                    originalPrice: '${item['original_price']}',
-                                    timeSlot: '${item['delivery']}',
-                                    quantity: '${item['pieces']}',
-                                    primaryColor: primaryColor);
-                              },
-                            );
-                          }
-                        },
-                      )
-                    : Obx(() {
-                        if (_foodController.foodItemsMap[widget.tagName] ==
-                            null) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (_foodController
-                            .foodItemsMap[widget.tagName]!.isEmpty) {
-                          return Center(child: Text("No data available"));
-                        } else {
-                          final data =
-                              _foodController.foodItemsMap[widget.tagName]!;
-                          return ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              final item = data[index];
-                              return FlashSaleCard(
-                                imageUrl: item['imageUrl'] ?? '',
-                                id: '${item['id']}',
-                                discountText: '',
-                                itemName: '${item['product_name']}',
-                                weight: '${item['weight']}',
-                                price: item['price'],
-                                originalPrice: '',
-                                timeSlot: '${item['delivery']}',
-                                quantity: '${item['pieces']}',
-                                primaryColor: primaryColor,
-                              );
-                            },
                           );
-                        }
-                      }),
-              ],
-            ),
+                        }).toList(),
+                      ),
+                      widget.tagName == 'Flash sale'
+                          ? StreamBuilder<List<Map<String, dynamic>>>(
+                              stream: _tagscreenStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text("Error: ${snapshot.error}"));
+                                } else if (!snapshot.hasData ||
+                                    snapshot.data!.isEmpty) {
+                                  return Center(
+                                      child: Text("No data available"));
+                                } else {
+                                  final data = snapshot.data!;
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: data.length,
+                                    itemBuilder: (context, index) {
+                                      final item = data[index];
+                                      return FlashSaleCard(
+                                          isFlashSale: true,
+                                          id: '${item['id']}',
+                                          discountText:
+                                              '${item['discount']}% off',
+                                          itemName: '${item['product_name']}',
+                                          weight: '${item['weight']}',
+                                          price: item['discounted_price'],
+                                          originalPrice:
+                                              '${item['original_price']}',
+                                          timeSlot: '${item['delivery']}',
+                                          quantity: '${item['pieces']}',
+                                          primaryColor: primaryColor);
+                                    },
+                                  );
+                                }
+                              },
+                            )
+                          : Obx(() {
+                              if (_foodController
+                                      .foodItemsMap[widget.tagName] ==
+                                  null) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (_foodController
+                                  .foodItemsMap[widget.tagName]!.isEmpty) {
+                                return Center(child: Text("No data available"));
+                              } else {
+                                final data = _foodController
+                                    .foodItemsMap[widget.tagName]!;
+                                return ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: data.length,
+                                  itemBuilder: (context, index) {
+                                    final item = data[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        nextPage(
+                                          context,
+                                          ProductDescription(
+                                            weight:
+                                                '${item['weight'] ?? 'No Weight'}',
+                                            id: item['id'],
+                                            productTitle:
+                                                item['product_name'] ??
+                                                    'No Name',
+                                            productImage:
+                                                item['imageUrl'] ?? 'No Name',
+                                            deliveryTime:
+                                                item['Delivery time'] ??
+                                                    'No Delivery Time',
+                                            productDescription:
+                                                item['description'] ??
+                                                    'No product description',
+                                            productInfo: [
+                                              {
+                                                'icon': 'scale',
+                                                'text':
+                                                    '${item['weight'] ?? 'No Weight'}'
+                                              },
+                                              {
+                                                'icon': 'pie_chart',
+                                                'text':
+                                                    '${item['pieces'] ?? 'No Pieces'} pieces'
+                                              },
+                                              {
+                                                'icon': 'group',
+                                                'text':
+                                                    'Serves ${item['serves'] ?? '0'}'
+                                              },
+                                            ],
+                                            recommendedItems: [],
+                                            price: double.parse(
+                                                item['price'].toString()),
+                                          ),
+                                        );
+                                      },
+                                      child: FlashSaleCard(
+                                        imageUrl: item['imageUrl'] ?? '',
+                                        id: '${item['id']}',
+                                        discountText: '',
+                                        itemName: '${item['product_name']}',
+                                        weight: '${item['weight']}',
+                                        price: double.parse(
+                                            item['price'].toString()),
+                                        originalPrice: '',
+                                        timeSlot: '${item['delivery']}',
+                                        quantity: '${item['pieces']}',
+                                        primaryColor: primaryColor,
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

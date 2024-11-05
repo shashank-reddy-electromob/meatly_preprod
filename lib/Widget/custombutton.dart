@@ -37,10 +37,6 @@ class _CustomButtonState extends State<CustomButton> {
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: primaryColor,
-          border: Border.all(
-            color: primaryColor,
-            width: 1.5,
-          ),
           borderRadius: BorderRadius.circular(30),
           boxShadow: const [
             BoxShadow(
